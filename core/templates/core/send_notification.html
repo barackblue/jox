@@ -1,0 +1,7 @@
+
+<h3>Send Notification</h3>
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Send</button>
+</form>

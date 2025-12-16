@@ -1,0 +1,33 @@
+{% extends 'core/base.html' %}
+{% block content %}
+{% if messages %}
+  <div class="messages">
+    {% for message in messages %}
+      <div class="alert 
+           {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}" 
+           role="alert">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="d-flex justify-content-between">
+  <h2>AI Search</h2>
+  {% if user.is_authenticated %}<h2><a href="{% url 'articles' %}" style=" text-decoration: none; color: rgb(19, 18, 18);"> Articles</a></h2>{% endif %}
+  {% if user.is_authenticated %}<a href="{% url 'article_new' %}" class="btn btn-sm btn-primary">Write</a>{% endif %}
+</div>
+<hr>
+<div class="row">
+  {% for d in object_list %}
+    <div class="col-md-4">
+      <div class="card mb-2 p-2">
+        <h5><a href="{{ d.get_absolute_url }}">{{ d.title }}</a></h5>
+        <p>{{ d.summary|truncatechars:200 }}</p>
+      </div>
+    </div>
+  {% empty %}
+    <p>No docs yet.</p>
+  {% endfor %}
+</div>
+{% endblock %}

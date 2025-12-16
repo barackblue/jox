@@ -1,0 +1,279 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}JOX{% endblock %}</title>
+    
+    <!-- Bootstrap & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <style>
+        /* ---------------- Sidebar ---------------- */
+        .profile-sidebar {
+            width: 260px;
+            min-height: 100vh;
+            background: #f8f9fa;
+            border-right: 1px solid #ddd;
+            padding-top: 1rem;
+            position: fixed;
+            top: 56px;
+            bottom: 0;
+            overflow-y: auto;
+        }
+        
+        .main-content {
+            margin-left: 260px;
+            padding-top: 1rem;
+        }
+        
+
+        @media (max-width: 768px) {
+            /* Sidebar hidden on mobile */
+            .profile-sidebar { display: none; }
+            .main-content { margin-left: 0; padding-bottom: 60px; }
+
+           
+        }
+
+        /* ---------------- Floating Button ---------------- */
+        #jumbo-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: black;
+            color: white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            cursor: pointer;
+            z-index: 9999;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        /* ---------------- Chat Window ---------------- */
+        #jumbo-box {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 320px;
+            height: 450px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            display: none;
+            flex-direction: column;
+            z-index: 9999;
+        }
+        #jumbo-header {
+            padding: 10px;
+            background: black;
+            color: white;
+            border-radius: 10px 10px 0 0;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #jumbo-chat { flex: 1; padding: 10px; overflow-y: auto; font-size: 14px; }
+        #jumbo-input-area { padding: 10px; border-top: 1px solid #ddd; display: flex; }
+        #jumbo-input { flex: 1; padding: 8px; border-radius: 5px; border: 1px solid #ccc; }
+        #jumbo-send { margin-left: 8px; padding: 8px 14px; background: black; color: white; border: none; border-radius: 5px; cursor: pointer; }
+
+        /* ---------------- Bottom Navbar for Mobile ---------------- */
+        .mobile-bottom-nav {
+            display: none;
+        }
+        @media (max-width: 768px) {
+            .mobile-bottom-nav {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                background: #f8f9fa;
+                border-top: 1px solid #ddd;
+                justify-content: space-around;
+                z-index: 9998;
+                padding: 5px 0;
+            }
+            .mobile-bottom-nav a {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                font-size: 12px;
+                color: #333;
+                text-decoration: none;
+            }
+        }
+
+        /* Navbar link styling */
+        .navbar .nav-link { display: flex; align-items: center; }
+        .navbar .nav-link i { font-size: 18px; }
+        .navbar .nav-link span { margin-left: 5px; display: none; }
+        .navbar .nav-link:hover span { display: inline; }
+
+        /* Profile pic fix */
+        .profile-sidebar img { object-fit: cover; }
+
+        /* Sidebar indent for nested links */
+        .profile-sidebar ul.nav li.nav-item ul { padding-left: 15px; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+<!-- Top Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light p-2 fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'articles' %}">JOX</a>
+
+        <!-- Hamburger for mobile -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar links collapse -->
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <!-- Search -->
+            <form class="d-flex me-auto mt-2 mt-lg-0" action="{% url 'search' %}">
+                <div class="input-group">
+                    <input class="form-control" name="q" placeholder="Search" value="{{ request.GET.q }}">
+                    <button class="btn btn-outline-secondary" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Navbar links -->
+            <ul class="navbar-nav ms-auto align-items-center mt-2 mt-lg-0">
+                <li class="nav-item mx-2">
+                    <a class="nav-link" href="{% url 'about' %}"><i class="bi bi-info-circle"></i> <span>About</span></a>
+                </li>
+                {% if user.is_authenticated %}
+                    <li class="nav-item mx-2">
+                        <a class="nav-link" href="{% url 'article_new' %}"><i class="bi bi-pencil-square"></i> <span>Write</span></a>
+                    </li>
+                    <li class="nav-item mx-2">
+                        <a class="nav-link" href="{% url 'notifications' %}"><i class="bi bi-bell"></i> <span>Notifications</span></a>
+                    </li>
+                    <li class="nav-item mx-2">
+                        <a class="nav-link" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> <span>Logout</span></a>
+                    </li>
+                {% else %}
+                    <li class="nav-item mx-2">
+                        <a class="nav-link" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right"></i> <span>Login</span></a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Profile Sidebar -->
+{% if user.is_authenticated %}
+<div class="profile-sidebar">
+    <div class="text-center mb-4 px-2">
+        {% if user.profile.profile_pic %}
+            <img src="{{ user.profile.profile_pic.url }}" class="rounded-circle" width="90" height="90">
+        {% else %}
+            <img src="{% static 'profile_pics/default.png' %}" class="rounded-circle" width="90" height="90">
+        {% endif %}
+        <h6 class="mt-2">
+            <a href="{% url 'profile_edit' %}">{{ user.username }}</a>
+        </h6>
+        <p class="text-muted small">{{ user.profile.bio|default:"No bio." }}</p>
+    </div>
+    <hr>
+    <ul class="nav flex-column px-2">
+        <li class="nav-item"><a class="nav-link" href="{% url 'articles' %}"><i class="bi bi-house-door"></i> <span>Home</span></a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'test' %}"><i class="bi bi-file-text"></i> <span>My Articles</span></a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'history' %}"><i class="bi bi-clock-history"></i> <span>History</span></a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'login_history' %}"><i class="bi bi-list-check"></i> <span>Logs</span></a></li>
+    </ul>
+</div>
+{% endif %}
+
+<!-- Floating Chat Button -->
+<div id="jumbo-btn">🤖</div>
+
+<!-- Chat Window -->
+<div id="jumbo-box">
+    <div id="jumbo-header">Jumbo AI <span id="jumbo-close" style="cursor:pointer;">✖</span></div>
+    <div id="jumbo-chat"></div>
+    <form id="jumbo-form" style="margin:0;">
+        {% csrf_token %}
+        <div id="jumbo-input-area">
+            <input id="jumbo-input" type="text" placeholder="Ask Jumbo...">
+            <button id="jumbo-send" type="submit"><i class="bi bi-send-fill"></i></button>
+        </div>
+    </form>
+</div>
+
+<!-- Main Content -->
+<div class="main-content container mt-5">
+    {% block content %}{% endblock %}
+</div>
+
+<!-- Bottom Mobile Navbar -->
+{% if user.is_authenticated %}
+<div class="mobile-bottom-nav d-flex">
+    <a href="{% url 'articles' %}"><i class="bi bi-house-door"></i><span>Home</span></a>
+    <a href="{% url 'test' %}"><i class="bi bi-file-text"></i><span>My Articles</span></a>
+    <a href="{% url 'history' %}"><i class="bi bi-clock-history"></i><span>History</span></a>
+    <a href="{% url 'profile_edit' %}"><i class="bi bi-person-circle"></i><span>Profile</span></a>
+    <a href="{% url 'login_history' %}"><i class="bi bi-list-check"></i><span>Logs</span></a>
+</div>
+{% endif %}
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Chat toggle
+    let jumboBtn = document.getElementById("jumbo-btn");
+    let jumboBox = document.getElementById("jumbo-box");
+    let jumboClose = document.getElementById("jumbo-close");
+    let jumboChat = document.getElementById("jumbo-chat");
+    let jumboForm = document.getElementById("jumbo-form");
+    let jumboInput = document.getElementById("jumbo-input");
+
+    jumboBtn.addEventListener("click", () => {
+        jumboBox.style.display = "flex";
+        jumboChat.innerHTML = "";
+        jumboInput.focus();
+    });
+    jumboClose.addEventListener("click", () => {
+        jumboBox.style.display = "none";
+        jumboChat.innerHTML = "";
+    });
+
+    jumboForm.addEventListener("submit", async function(e){
+        e.preventDefault();
+        let msg = jumboInput.value.trim();
+        if (!msg) return;
+        let csrf = document.querySelector("[name=csrfmiddlewaretoken]").value;
+        jumboChat.innerHTML += `<div><b>You:</b> ${msg}</div>`;
+        jumboChat.scrollTop = jumboChat.scrollHeight;
+
+        let response = await fetch("{% url 'jumbo_chat' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": csrf,
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: "message=" + encodeURIComponent(msg)
+        });
+        let data = await response.json();
+        jumboChat.innerHTML += `<div style="margin-top:5px;"><b>Jumbo:</b> ${data.reply}</div>`;
+        jumboChat.scrollTop = jumboChat.scrollHeight;
+        jumboInput.value = "";
+    });
+</script>
+</body>
+</html>

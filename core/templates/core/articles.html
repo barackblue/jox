@@ -1,0 +1,157 @@
+{% extends 'core/base.html' %}
+{% block content %}
+
+<style>
+/* Container for articles */
+.articles-container {
+    padding: 40px 20px;
+    background: #e0e5ec;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Article Card */
+.article-card {
+    background: #e0e5ec;
+    padding: 25px 30px;
+    border-radius: 20px;
+    box-shadow:
+        20px 20px 60px #bec3cf,
+        -20px -20px 60px #ffffff;
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+    transition: 0.2s;
+}
+
+.article-card:hover {
+    transform: scale(1.01);
+}
+
+/* Article Header */
+.article-card h4 a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.article-card h4 a:hover {
+    color: #007bff;
+    text-decoration: underline;
+}
+
+/* Article Meta Info */
+.article-meta {
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+/* Article Body */
+.article-body {
+    font-size: 14px;
+    color: #444;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+/* Show More Button */
+#toggleBtn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    border-radius: 12px;
+    border: none;
+    background: #e0e5ec;
+    cursor: pointer;
+    box-shadow:
+        8px 8px 15px #bec3cf,
+        -8px -8px 15px #ffffff;
+    font-size: 16px;
+    transition: 0.2s;
+}
+
+#toggleBtn:active {
+    box-shadow:
+        inset 8px 8px 15px #bec3cf,
+        inset -8px -8px 15px #ffffff;
+}
+
+/* Extra articles hidden by default */
+.article-card.extra { display: none; }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .articles-container {
+        padding: 20px 15px;
+    }
+    .article-card {
+        padding: 20px;
+        max-width: 100%;
+    }
+}
+</style>
+
+<div class="articles-container">
+
+    {% if messages %}
+    <div class="messages mb-3">
+        {% for message in messages %}
+        <div class="alert 
+            {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}" 
+            role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <h3 style="text-align:center; margin-bottom: 20px;"><strong>Articles</strong></h3>
+
+    {% for a in object_list|slice:":5" %}
+    <div class="article-card">
+        <h4><a href="{{ a.get_absolute_url }}">{{ a.title }}</a></h4>
+        <div class="article-meta">
+            by {{ a.author }} • {{ a.created_at|date:"Y-m-d" }} • {{ a.likes_count }} likes
+        </div>
+        <div class="article-body">{{ a.body|truncatechars:300 }}</div>
+    </div>
+    {% endfor %}
+
+    {% for a in object_list|slice:"5:" %}
+    <div class="article-card extra">
+        <h4><a href="{{ a.get_absolute_url }}">{{ a.title }}</a></h4>
+        <div class="article-meta">
+            by {{ a.author }} • {{ a.created_at|date:"Y-m-d" }} • {{ a.likes_count }} likes
+        </div>
+        <div class="article-body">{{ a.body|truncatechars:300 }}</div>
+    </div>
+    {% endfor %}
+
+    {% if object_list|length > 5 %}
+    <button id="toggleBtn">Show More</button>
+    {% endif %}
+
+    {% if not object_list %}
+    <p style="text-align:center; color:#555;">No articles yet.</p>
+    {% endif %}
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const btn = document.getElementById("toggleBtn");
+    const extras = document.querySelectorAll(".extra");
+    let open = false;
+
+    btn?.addEventListener("click", () => {
+        open = !open;
+        extras.forEach(i => i.style.display = open ? "block" : "none");
+        btn.textContent = open ? "Show Less" : "Show More";
+    });
+});
+</script>
+
+{% endblock %}

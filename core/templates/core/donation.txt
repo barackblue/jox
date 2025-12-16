@@ -1,0 +1,23 @@
+{#
+<!-- Donation modal -->
+<div class="modal" tabindex="-1" id="donationModal">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content p-3">
+      <h5>Support JOX</h5>
+      <p>If you like this platform, consider donating.</p>
+      <a href="/donate/" class="btn btn-primary">Donate</a>
+      <button class="btn btn-secondary" id="closeDonation">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+$(function(){
+  const show = {{ request.session.pop('show_donation_popup', False)|yesno:"true,false" }};
+  if (show === true || show === 'true') {
+    $('#donationModal').show();
+  }
+  $('#closeDonation').click(()=>$('#donationModal').hide());
+});
+</script>
+#}

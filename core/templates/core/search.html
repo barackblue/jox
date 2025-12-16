@@ -1,0 +1,14 @@
+{% extends "core/base.html" %}
+{% block content %}
+<h3>Search results for "{{ query }}"</h3>
+<hr>
+{% if results %}
+    {% for article in results %}
+    <div class="article-item">
+        <a href="{{ article.get_absolute_url }}">{{ article.title }}</a>
+    </div>
+    {% endfor %}
+{% else %}
+    <p>No results found.</p>
+{% endif %}
+{% endblock %}

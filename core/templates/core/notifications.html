@@ -1,0 +1,14 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h3>My Notifications</h3>
+<ul>
+    {% for notif in notifications %}
+    <li>
+        <strong>From: {{ notif.sender.username }}</strong> — {{ notif.message }}
+        <small>{{ notif.timestamp|date:"Y-m-d H:i" }}</small>
+    </li>
+    {% empty %}
+    <li>No notifications yet.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

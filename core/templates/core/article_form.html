@@ -1,0 +1,59 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 800px; margin: 0 auto; margin-top: 40px;">
+
+    <h1 style="font-weight: bold;">Write a new article</h1>
+    <hr>
+
+    {% if messages %}
+      <div>
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <form action="" method="post">
+        {% csrf_token %}
+        <div style="margin-bottom: 20px;">
+            {{ form.title.label_tag }}
+            {{ form.title }}
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            {{ form.body.label_tag }}
+            {{ form.body }}
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            {{ form.tags.label_tag }}
+            {{ form.tags }}
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            {{ form.published.label_tag }}
+            {{ form.published }}
+        </div>
+
+        <button type="submit" class="btn btn-dark">Publish</button>
+    </form>
+
+</div>
+<style>
+    input, textarea, select {
+        width: 100%;
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        margin-top: 5px;
+        font-size: 16px;
+    }
+
+    textarea {
+        min-height: 300px;
+        resize: vertical;
+    }
+</style>
+
+{% endblock %}

@@ -1,0 +1,193 @@
+
+{% extends 'core/base.html' %}
+{% block content %}
+{% load static %}
+<style>
+/* ---------------- General ---------------- */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Neumorphic Card Style */
+.neumorphic-card {
+    background: #e0e5ec;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow:
+        8px 8px 15px #bec3cf,
+        -8px -8px 15px #ffffff;
+    transition: 0.3s;
+}
+.neumorphic-card:hover {
+    box-shadow:
+        inset 8px 8px 15px #bec3cf,
+        inset -8px -8px 15px #ffffff;
+}
+
+/* Hero Section */
+.hero-section {
+    background-color: #0b2e5c;
+    color: white;
+    padding: 80px 20px;
+    text-align: center;
+}
+.hero-section img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+    box-shadow:
+        8px 8px 15px #021b3a,
+        -8px -8px 15px #153871;
+}
+.hero-section h1 {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+.hero-section p {
+    font-size: 1.2rem;
+    max-width: 700px;
+    margin: 10px auto;
+    line-height: 1.6;
+}
+
+/* Offer Section */
+.offer-section {
+    background: #f0f3f7;
+    color: #0b2e5c;
+    padding: 60px 20px;
+}
+.offer-container {
+    max-width: 1000px;
+    margin: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    justify-content: center;
+}
+.offer-card {
+    flex: 1 1 250px;
+    padding: 30px;
+    border-radius: 20px;
+    background: #e0e5ec;
+    box-shadow:
+        8px 8px 15px #bec3cf,
+        -8px -8px 15px #ffffff;
+    transition: 0.3s;
+}
+.offer-card:hover {
+    box-shadow:
+        inset 8px 8px 15px #bec3cf,
+        inset -8px -8px 15px #ffffff;
+}
+.offer-card h3 {
+    margin-bottom: 15px;
+}
+.offer-card p {
+    line-height: 1.6;
+}
+
+/* Call to Action */
+.cta-section {
+    background-color: #0b2e5c;
+    color: white;
+    padding: 60px 20px;
+    text-align: center;
+}
+.cta-section a {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 30px;
+    background: #e0e5ec;
+    color: #0b2e5c;
+    border-radius: 12px;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow:
+        8px 8px 15px #bec3cf,
+        -8px -8px 15px #ffffff;
+    transition: 0.3s;
+}
+.cta-section a:hover {
+    box-shadow:
+        inset 8px 8px 15px #bec3cf,
+        inset -8px -8px 15px #ffffff;
+}
+
+/* Footer */
+footer {
+    background-color: #021b3a;
+    color: white;
+    padding: 40px 20px;
+    text-align: center;
+}
+footer a {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 2.2rem;
+    }
+    .hero-section p {
+        font-size: 1rem;
+    }
+    .offer-card {
+        flex: 1 1 100%;
+    }
+}
+</style>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <img src="{{ MEDIA_URL }}logo.png" alt="Able Logo">
+
+    <h1>Able</h1>
+    <p>"Awareness Matters"</p>
+    <p>
+        Able is a platform dedicated to spreading awareness. We provide detailed explanations about different organizations and their work, 
+        and offer a space for publishing articles, thoughts, and news to inform and inspire people.
+    </p>
+</section>
+
+<!-- What We Offer Section -->
+<section class="offer-section">
+    <div class="offer-container">
+        <div class="offer-card">
+            <h3>Detailed Explanations</h3>
+            <p>We break down what organizations do and how they impact communities, making complex information accessible to everyone.</p>
+        </div>
+        <div class="offer-card">
+            <h3>Article Publishing</h3>
+            <p>Users can publish their articles, thoughts, and insights on organizations, inner self, or news to raise awareness globally.</p>
+        </div>
+        <div class="offer-card">
+            <h3>Spread Awareness</h3>
+            <p>Our platform encourages sharing, discussion, and learning, helping communities become more informed and conscious of social issues.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="cta-section">
+    <h2>Join Able Today</h2>
+    <p>Contribute your thoughts, publish articles, and help spread awareness about organizations, news, and self-improvement topics.</p>
+    <a href="{% url 'register' %}">Get Started</a>
+</section>
+
+<!-- Footer -->
+<footer>
+    <p>&copy; {{ now|date:"Y" }} Able. All rights reserved.</p>
+    <div>
+        <a href="#">About</a>|
+        <a href="#">Contact</a>|
+        <a href="#">Privacy Policy</a>
+    </div>
+</footer>
+
+{% endblock %}

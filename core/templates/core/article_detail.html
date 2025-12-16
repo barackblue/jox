@@ -1,0 +1,236 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<style>
+/* Full-page container to center card */
+.article-page {
+  display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    background: #e0e5ec;
+}
+
+/* Neumorphic article card */
+.article-card {
+    background: #e0e5ec;
+    border-radius: 20px;
+    box-shadow:
+        20px 20px 60px #bec3cf,
+        -20px -20px 60px #ffffff;
+    padding: 30px 35px;
+    width: 100%;
+    max-width: 1000px;
+    margin-bottom: 30px;
+}
+
+/* Article title */
+.article-card h2 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+/* Meta info */
+.article-meta {
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+/* Article body */
+.article-body {
+    font-size: 14px;
+    color: #444;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    max-height: 550px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* Scrollbar styling */
+.article-body::-webkit-scrollbar {
+    width: 6px;
+}
+.article-body::-webkit-scrollbar-thumb {
+    background-color: #bec3cf;
+    border-radius: 3px;
+}
+.article-body::-webkit-scrollbar-track {
+    background: #e0e5ec;
+}
+
+/* Buttons container */
+.buttons-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+/* Like button */
+#likeBtn, #commentBtn {
+    border-radius: 12px;
+    box-shadow:
+        6px 6px 10px #bec3cf,
+        -6px -6px 10px #ffffff;
+    transition: 0.2s;
+}
+#likeBtn:active, #commentBtn:active {
+    box-shadow:
+        inset 6px 6px 10px #bec3cf,
+        inset -6px -6px 10px #ffffff;
+}
+
+/* Comments popup */
+#commentModal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #e0e5ec;
+    padding: 25px 30px;
+    border-radius: 20px;
+    box-shadow:
+        20px 20px 60px #bec3cf,
+        -20px -20px 60px #ffffff;
+    max-width: 500px;
+    width: 90%;
+    z-index: 9999;
+}
+
+#commentModal h5 {
+    margin-bottom: 15px;
+}
+
+#commentModal .close-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 18px;
+    color: #333;
+}
+
+/* Comment items in modal */
+.comment-item {
+    background: #e0e5ec;
+    border-radius: 12px;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    box-shadow:
+        inset 5px 5px 12px #bec3cf,
+        inset -5px -5px 12px #ffffff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .article-page {
+        padding: 20px 10px;
+    }
+    .article-card {
+        padding: 20px;
+        max-width: 100%;
+    }
+    .article-body {
+        max-height: 300px;
+    }
+}
+</style>
+
+<div class="article-page">
+    <div class="article-card">
+
+        {% if messages %}
+        <div class="messages mb-3">
+            {% for message in messages %}
+            <div class="alert 
+                {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}" 
+                role="alert">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <h2>{{ object.title }}</h2>
+        <div class="article-meta">
+            by {{ object.author }} • {{ object.created_at|date:"Y-m-d" }}
+        </div>
+        <hr>
+        <div class="article-body">{{ object.body|linebreaks }}</div>
+
+        <div class="buttons-container">
+            {% if user.is_authenticated %}
+            <button id="likeBtn" class="btn btn-sm btn-outline-primary">
+                Like (<span id="likesCount">{{ object.likes_count }}</span>)
+            </button>
+            <button id="commentBtn" class="btn btn-sm btn-outline-secondary">Comments</button>
+            {% else %}
+            <a href="{% url 'login' %}">Login to like or comment</a>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+<!-- Comments Modal -->
+<div id="commentModal">
+    <span class="close-modal">✖</span>
+    <h5>Comments</h5>
+    <div class="comments">
+        {% for c in object.comments.all %}
+        <div class="comment-item">
+            <strong>{{ c.user|default_if_none:"Anonymous" }}</strong> — {{ c.body }}
+        </div>
+        {% empty %}
+        <p>No comments</p>
+        {% endfor %}
+    </div>
+
+    {% if user.is_authenticated %}
+    <form method="post" action="{% url 'add_comment' object.slug %}" class="comment-form">{% csrf_token %}
+        {{ comment_form.as_p }}
+        <button class="btn btn-sm btn-primary">Comment</button>
+    </form>
+    {% else %}
+    <p><a href="{% url 'login' %}">Login</a> to comment</p>
+    {% endif %}
+</div>
+
+<input type="hidden" id="csrf" value="{{ csrf_token }}">
+
+<script>
+$(document).ready(function(){
+    // Like button
+    $('#likeBtn').on('click', function(){
+        $.ajax({
+            url: "{% url 'toggle_like' object.slug %}",
+            method: "POST",
+            headers: { "X-CSRFToken": $('#csrf').val() },
+            success: function(resp){
+                $('#likesCount').text(resp.likes);
+            }
+        });
+    });
+
+    // Comment modal toggle
+    $('#commentBtn').on('click', function(){
+        $('#commentModal').fadeIn(200);
+    });
+
+    $('.close-modal').on('click', function(){
+        $('#commentModal').fadeOut(200);
+    });
+
+    // Close modal when clicking outside
+    $(window).on('click', function(e){
+        if($(e.target).is('#commentModal')){
+            $('#commentModal').fadeOut(200);
+        }
+    });
+});
+</script>
+
+{% endblock %}

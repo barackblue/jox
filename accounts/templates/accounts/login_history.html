@@ -1,0 +1,164 @@
+{% extends "core/base.html" %}
+{% block content %}
+
+<style>
+.activity-container {
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    background: #e0e5ec;
+}
+
+.activity-card {
+    background: #e0e5ec;
+    padding: 30px 35px;
+    width: 500px;
+    border-radius: 20px;
+    box-shadow:
+        20px 20px 60px #bec3cf,
+        -20px -20px 60px #ffffff;
+}
+
+h3 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#activityList {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.activity-item {
+    padding: 12px 15px;
+    margin-bottom: 12px;
+    background: #e0e5ec;
+    border-radius: 12px;
+    box-shadow:
+        inset 5px 5px 12px #bec3cf,
+        inset -5px -5px 12px #ffffff;
+    transition: 0.2s;
+}
+
+.activity-item:hover {
+    transform: scale(1.01);
+}
+
+.activity-item span {
+    font-weight: bold;
+}
+
+.activity-item small {
+    font-size: 12px;
+    color: #444;
+    display: block;
+    margin-top: 5px;
+}
+
+/* New Device / First Login Badges */
+.badge {
+    display: inline-block;
+    padding: 3px 8px;
+    margin-left: 5px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.badge.new-device { background-color: #ff7f50; }  /* Coral */
+.badge.first-login { background-color: #32cd32; } /* Lime Green */
+
+/* Neumorphic Show More Button */
+#toggleBtn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    border-radius: 12px;
+    border: none;
+    background: #e0e5ec;
+    cursor: pointer;
+    box-shadow:
+        8px 8px 15px #bec3cf,
+        -8px -8px 15px #ffffff;
+    font-size: 16px;
+    transition: 0.2s;
+}
+
+#toggleBtn:active {
+    box-shadow:
+        inset 8px 8px 15px #bec3cf,
+        inset -8px -8px 15px #ffffff;
+}
+</style>
+
+<div class="activity-container">
+    <div class="activity-card">
+
+        <h3><strong>Login History</strong></h3>
+
+        <ul id="activityList">
+            {% for log in logs|slice:":5" %}
+            <li class="activity-item">
+                <span>{{ log.user.username }}</span> logged in
+                {% if log.is_new_device %}
+                    <span class="badge new-device">New Device</span>
+                {% endif %}
+                {% if log.is_first_login %}
+                    <span class="badge first-login">First Login</span>
+                {% endif %}
+                <small>IP: {{ log.ip_address }} — Location: {{ log.location }}</small>
+                <small>{{ log.timestamp|date:"Y-m-d H:i" }}</small>
+
+               
+            </li>
+            {% endfor %}
+
+            {% for log in logs|slice:"5:" %}
+            <li class="activity-item extra" style="display:none;">
+                <span>{{ log.user.username }}</span> logged in
+                {% if log.is_new_device %}
+                    <span class="badge new-device">New Device</span>
+                {% endif %}
+                {% if log.is_first_login %}
+                    <span class="badge first-login">First Login</span>
+                {% endif %}
+                <small>IP: {{ log.ip_address }} — Location: {{ log.location }}</small>
+                <small>{{ log.timestamp|date:"Y-m-d H:i" }}</small>
+            </li>
+            {% endfor %}
+        </ul>
+
+        {% if logs|length > 5 %}
+        <button id="toggleBtn">Show More</button>
+        {% endif %}
+
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const btn = document.getElementById("toggleBtn");
+    const extras = document.querySelectorAll(".extra");
+    let open = false;
+
+    btn?.addEventListener("click", () => {
+        open = !open;
+
+        extras.forEach(i => {
+            i.style.display = open ? "block" : "none";
+        });
+
+        btn.textContent = open ? "Show Less" : "Show More";
+    });
+});
+
+document.querySelector('form button[name="clear_history"]').addEventListener('click', function(e){
+    if(!confirm("Are you sure you want to clear all your history?")) {
+        e.preventDefault();
+    }
+});
+</script>
+
+{% endblock %}

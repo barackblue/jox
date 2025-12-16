@@ -1,0 +1,157 @@
+{% extends 'core/base.html' %}
+{% block content %}
+
+<style>
+/* Full-page flex container to center content */
+.articles-page {
+  display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    background: #e0e5ec;
+}
+
+.articles-card {
+    background: #e0e5ec;
+    padding: 25px 30px;
+    width: 100%;
+    max-width: 600px;
+    border-radius: 20px;
+    box-shadow:
+        20px 20px 60px #bec3cf,
+        -20px -20px 60px #ffffff;
+}
+
+.articles-card h3 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#articleList {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.article-item {
+    padding: 12px 15px;
+    margin-bottom: 12px;
+    background: #e0e5ec;
+    border-radius: 12px;
+    box-shadow:
+        inset 5px 5px 12px #bec3cf,
+        inset -5px -5px 12px #ffffff;
+    transition: 0.2s;
+}
+
+.article-item:hover {
+    transform: scale(1.01);
+}
+
+.article-item a {
+    font-weight: bold;
+    text-decoration: none;
+    color: #333;
+}
+
+.article-item a:hover {
+    color: #007bff;
+    text-decoration: underline;
+}
+
+/* Neumorphic Show More Button */
+#toggleBtn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    border-radius: 12px;
+    border: none;
+    background: #e0e5ec;
+    cursor: pointer;
+    box-shadow:
+        8px 8px 15px #bec3cf,
+        -8px -8px 15px #ffffff;
+    font-size: 16px;
+    transition: 0.2s;
+}
+
+#toggleBtn:active {
+    box-shadow:
+        inset 8px 8px 15px #bec3cf,
+        inset -8px -8px 15px #ffffff;
+}
+
+/* Extra articles hidden by default */
+.article-item.extra { display: none; }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .articles-page {
+        padding: 20px 15px;
+        min-height: auto;
+    }
+    .articles-card {
+        padding: 20px;
+        max-width: 100%;
+    }
+}
+</style>
+
+<div class="articles-page">
+    <div class="articles-card">
+
+        {% if messages %}
+        <div class="messages mb-3">
+            {% for message in messages %}
+            <div class="alert 
+                {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}" 
+                role="alert">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <h3><strong>My Articles</strong></h3>
+
+        <ul id="articleList">
+            {% for article in articles|slice:":5" %}
+            <li class="article-item">
+                <a href="{{ article.get_absolute_url }}">{{ article.title|truncatewords:5 }}</a>
+            </li>
+            {% endfor %}
+
+            {% for article in articles|slice:"5:" %}
+            <li class="article-item extra">
+                <a href="{{ article.get_absolute_url }}">{{ article.title|truncatewords:5 }}</a>
+            </li>
+            {% endfor %}
+
+            {% if not articles %}
+            <li class="article-item">
+                <span class="text-muted">No articles yet.</span>
+            </li>
+            {% endif %}
+        </ul>
+
+        {% if articles|length > 5 %}
+        <button id="toggleBtn">Show More</button>
+        {% endif %}
+
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const btn = document.getElementById("toggleBtn");
+    const extras = document.querySelectorAll(".extra");
+    let open = false;
+
+    btn?.addEventListener("click", () => {
+        open = !open;
+        extras.forEach(i => i.style.display = open ? "block" : "none");
+        btn.textContent = open ? "Show Less" : "Show More";
+    });
+});
+</script>
+
+{% endblock %}
