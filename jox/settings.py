@@ -144,8 +144,8 @@ EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-EMAIL_HOST_USER = "itshardtosay5@gmail.com"
-EMAIL_HOST_PASSWORD = "lfzo spmh pxmv hnop "
+EMAIL_HOST_USER = ""
+EMAIL_HOST_PASSWORD = ""
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
